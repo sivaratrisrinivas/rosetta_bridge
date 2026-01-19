@@ -35,13 +35,13 @@
   - *Verification:* Run against a specific "Status" or "Type" column in your Supabase DB.
 
 ## Phase 3: The Intelligence Layer (Gemini)
-- [ ] **Step 6: Gemini Client Wrapper**
+- [x] **Step 6: Gemini Client Wrapper**
   - Create `src/rosetta_bridge/inference/client.py`.
   - Initialize `genai.GenerativeModel('gemini-1.5-flash')`.
   - Implement `generate_description(table_context)`.
   - *Verification:* Create `tests/debug_gemini.py` to send a "Hello World" prompt to Gemini and print the response.
 
-- [ ] **Step 7: Prompt Engineering**
+- [x] **Step 7: Prompt Engineering**
   - Create `src/rosetta_bridge/inference/prompts.py`.
   - Construct the System Prompt ("You are a Data Architect...") and User Prompt (Inject schema + samples).
   - Ensure logic exists to *exclude* PII sample values from the prompt payload.
