@@ -53,7 +53,7 @@
   - Create `src/rosetta_bridge/codegen/renderer.py` to render Pydantic models.
   - *Verification:* Pass a dummy dictionary of enriched columns to the renderer and check if valid Python code is printed.
 
-- [ ] **Step 9: Jinja Template - Repositories (Safety)**
+- [x] **Step 9: Jinja Template - Repositories (Safety)**
   - Create `templates/repos.py.j2`.
   - Write template for `Repository` classes containing ONLY `select` statements (Safety by Design).
   - *Verification:* Render the template and verify the string "commit()" or "update" does NOT exist in the output.
