@@ -65,7 +65,7 @@
   - *Verification:* Generate valid `.py` files in a `generated/` folder.
 
 ## Phase 5: Interface & Audit
-- [ ] **Step 11: Audit Log Generation**
+- [x] **Step 11: Audit Log Generation**
   - Create `src/rosetta_bridge/codegen/audit.py`.
   - Generate a simple Markdown table: `| Table | Original Column | Inferred Meaning |`.
   - *Verification:* Generate the log and check file content.
