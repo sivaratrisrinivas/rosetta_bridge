@@ -48,7 +48,7 @@
   - *Verification:* Print the generated prompt string to console and visually confirm PII is scrubbed.
 
 ## Phase 4: Code Generation
-- [ ] **Step 8: Jinja Template - Models**
+- [x] **Step 8: Jinja Template - Models**
   - Create `templates/models.py.j2`.
   - Create `src/rosetta_bridge/codegen/renderer.py` to render Pydantic models.
   - *Verification:* Pass a dummy dictionary of enriched columns to the renderer and check if valid Python code is printed.

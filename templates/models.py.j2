@@ -1,0 +1,12 @@
+from pydantic import BaseModel
+
+{% for table in tables %}
+class {{ to_pascal(table.table_name) }}(BaseModel):
+{% for column in table.columns %}
+    {{ column.semantic_name or column.original_name }}: {{ column.python_type }}
+{% if column.description %}
+    """{{ column.description }}"""
+{% endif %}
+{% endfor %}
+
+{% endfor %}
