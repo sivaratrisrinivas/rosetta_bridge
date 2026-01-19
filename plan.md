@@ -23,13 +23,13 @@
   - *Verification:* Create a script `tests/debug_db.py` that connects to Supabase and prints the schema of a real table.
 
 ## Phase 2: Analysis & Heuristics
-- [ ] **Step 4: Sampling & PII Detection**
+- [x] **Step 4: Sampling & PII Detection**
   - Create `src/rosetta_bridge/analyzer/sampler.py`.
   - Implement `fetch_sample_rows` (Query Supabase with `LIMIT 3`).
   - Implement `detect_pii` using regex (email, phone, ssn patterns).
   - *Verification:* Create a unit test `tests/unit/test_sampler.py` with mock data to verify PII flagging works.
 
-- [ ] **Step 5: Enum Detection Logic**
+- [x] **Step 5: Enum Detection Logic**
   - Create `src/rosetta_bridge/analyzer/enums.py`.
   - Logic: Check if column is String/Int -> Run `SELECT DISTINCT` -> If count < 20, return values.
   - *Verification:* Run against a specific "Status" or "Type" column in your Supabase DB.

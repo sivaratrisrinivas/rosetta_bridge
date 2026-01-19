@@ -33,9 +33,7 @@ uv run rosetta-bridge generate
 ```
 
 ## Config
-```
-rosetta_map.yaml
-```
+`rosetta_map.yaml` controls tables, model, and privacy rules.
 
 ## Output
 ```
@@ -44,3 +42,8 @@ generated/
   _repos.py
   audit_log.md
 ```
+
+## Notes
+- Connection string is a SQLAlchemy URL in `DATABASE_URL`.
+- `detect_pii` flags emails/phones/SSNs and is used to scrub samples.
+- Low-cardinality columns (e.g., status) are treated as enums.

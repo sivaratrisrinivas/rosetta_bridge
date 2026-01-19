@@ -63,7 +63,7 @@ These models define the internal state of the application during the build proce
 ```yaml
 project_name: str
 database:
-  connection_string: str  # Can reference env var ${DATABASE_URL}
+  connection_string: str  # SQLAlchemy URL, can reference ${DATABASE_URL}
 whitelist_tables: List[str] # Mandatory list of tables to process
 llm_config:
   model: "gemini-1.5-flash"
