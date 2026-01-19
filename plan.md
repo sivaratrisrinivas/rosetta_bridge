@@ -75,7 +75,7 @@
   - Should run Phase 1 & 2 (Connectivity + Analysis) and print a summary table to the console.
   - *Verification:* Run `uv run rosetta-bridge inspect --config rosetta_map.yaml` against Supabase.
 
-- [ ] **Step 13: CLI 'Generate' Command**
+- [x] **Step 13: CLI 'Generate' Command**
   - Wire up `rosetta-bridge generate` in `main.py`.
   - Wire up full pipeline: Inspect -> Analyze -> Infer -> Generate -> Audit.
   - *Verification:* End-to-end run producing usable code.

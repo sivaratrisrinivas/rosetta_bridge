@@ -1,19 +1,10 @@
 # Rosetta Bridge 🌉
 
 ## What
-Turn a Supabase/Postgres database into clean, safe Python code: data models, read-only queries, and an audit log.
+CLI that turns a Supabase/Postgres schema into read-only Python models, read-only repos, and an audit log.
 
-## Why
-Legacy schemas are hard to understand and easy to misuse. This tool:
-- gives human-friendly meanings to tables/columns
-- prevents write operations by design
-- leaves a clear audit trail of what was inferred
-
-## How
-1. Read the schema
-2. Sample small rows and scrub sensitive data
-3. Ask Gemini for plain-English meaning
-4. Generate Python models + read-only repos + audit log
+## Status
+End-to-end generate pipeline is wired. Gemini prompts are sent during generation, but semantic renaming is not yet applied to the output (current output keeps original column names plus enum hints).
 
 ## Setup
 ```
@@ -22,18 +13,32 @@ cp .env.example .env
 ```
 
 Set in `.env`:
-- `DATABASE_URL` (Supabase/Postgres connection string)
+- `DATABASE_URL` (Supabase/Postgres SQLAlchemy URL)
 - `GEMINI_API_KEY`
+
+## Config
+`rosetta_map.yaml` controls tables, model, and privacy rules.
+
+```yaml
+project_name: rosetta-bridge
+database:
+  connection_string: ${DATABASE_URL}
+whitelist_tables:
+  - public.users
+llm_config:
+  model: gemini-3-flash-preview
+  temperature: 0.0
+privacy:
+  sample_rows: false
+  scrub_pii: true
+```
 
 ## Use
 ```
 uv run rosetta-bridge init
-uv run rosetta-bridge inspect
-uv run rosetta-bridge generate
+uv run rosetta-bridge inspect --config rosetta_map.yaml
+uv run rosetta-bridge generate --config rosetta_map.yaml --output-dir generated --format
 ```
-
-## Config
-`rosetta_map.yaml` controls tables, model, and privacy rules.
 
 ## Output
 ```
@@ -43,7 +48,12 @@ generated/
   audit_log.md
 ```
 
+## Tests
+```
+uv run pytest
+```
+
 ## Notes
-- Connection string is a SQLAlchemy URL in `DATABASE_URL`.
-- `detect_pii` flags emails/phones/SSNs and is used to scrub samples.
-- Low-cardinality columns (e.g., status) are treated as enums.
+- Connection string supports `${DATABASE_URL}` expansion.
+- PII samples are scrubbed when `privacy.scrub_pii` is true.
+- Low-cardinality columns are treated as enums for descriptions.

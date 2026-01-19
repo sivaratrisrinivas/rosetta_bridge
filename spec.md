@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-**Rosetta Bridge** is a CLI-based build tool designed to bridge the "Execution Gap" between cryptic legacy SQL schemas (specifically Supabase/PostgreSQL) and modern AI Agents. It automates the semantic understanding of database structures using Google's Gemini models, generating type-safe Python code (Pydantic models) and "Safe-by-Design" function tools that Agents can utilize immediately.
+**Rosetta Bridge** is a CLI-based build tool designed to bridge the "Execution Gap" between cryptic legacy SQL schemas (specifically Supabase/PostgreSQL) and modern AI Agents. It automates schema inspection, applies safety heuristics, and invokes Gemini for semantic enrichment. It generates type-safe Python code (Pydantic models) and "Safe-by-Design" read-only repositories that Agents can use immediately. (Gemini output is currently not applied to rename fields.)
 
 ### 1.1 Core Objectives
 1.  **Accelerate Time-to-Value:** Reduce the "schema onboarding" phase from weeks to minutes by automating the mapping of tables to business logic.
@@ -26,7 +26,7 @@
 | **Package Manager** | `uv` | Fast, modern dependency and environment management. |
 | **Database Reflection** | `SQLAlchemy` + `psycopg2` | Robust introspection for Supabase (PostgreSQL). |
 | **Data Validation** | `Pydantic v2` | High-performance serialization/validation. |
-| **LLM Orchestration** | `Google Gemini API` | Uses `gemini-3-flash-preview` for high-speed, low-cost semantic reasoning. |
+| **LLM Orchestration** | `google-genai` (Gemini API) | Uses `gemini-3-flash-preview` for fast semantic prompts. |
 | **Code Generation** | `Jinja2` | Templating engine to produce clean Python code. |
 | **CLI Framework** | `Typer` + `Rich` | Type-safe CLI builder with excellent UX/formatting. |
 | **Testing** | `Pytest` | Standard unit testing framework. |
@@ -41,7 +41,7 @@ The system operates as a **unidirectional build pipeline**. It does not run as a
 
 1.  **Ingestion:** Connect to Supabase $\rightarrow$ Reflect Schema Metadata (Tables, Columns, Types).
 2.  **Analysis:** Detect candidates for Enums (low cardinality) & flag PII (Regex heuristics).
-3.  **Inference:** Send sanitized metadata to Gemini $\rightarrow$ Receive Semantic Descriptions.
+3.  **Inference:** Send sanitized metadata to Gemini $\rightarrow$ Receive semantic descriptions (currently not applied to output).
 4.  **Generation:** Hydrate Jinja2 templates $\rightarrow$ Write `.py` artifacts & Audit Log.
 
 ### 3.2 Output Artifacts
@@ -74,27 +74,19 @@ privacy:
 
 ```
 
-### 4.2 Metadata Objects
+### 4.2 Render Payloads (Current)
 
-**`ColumnMetadata`**
+**`ColumnSpec`**
 
-* `original_name`: str (e.g., `FLG_STS`)
-* `data_type`: str (e.g., `VARCHAR`)
-* `is_primary_key`: bool
-* `sample_values`: List[Any] (Optional)
-* `detected_pii`: bool
+* `original_name`: str (e.g., `status`)
+* `python_type`: str (e.g., `str`, `int`)
+* `semantic_name`: str | None (currently same as `original_name`)
+* `description`: str | None (enum hint like "Allowed values: active, closed")
 
-**`EnrichedColumn` (Post-Gemini)**
-
-* `semantic_name`: str (e.g., `status_flag`)
-* `description`: str (e.g., "Indicates if the account is Active (A) or Closed (C)")
-* `suggested_enum`: Optional[Dict[str, str]]
-
-**`TableContext`**
+**`TableSpec`**
 
 * `table_name`: str
-* `columns`: List[EnrichedColumn]
-* `business_purpose`: str (Gemini inferred summary)
+* `columns`: List[ColumnSpec]
 
 ---
 
@@ -127,12 +119,13 @@ Runs a "Dry Run" to verify connectivity and schema readability.
 
 The core execution command.
 
-* **Input:** `--config rosetta_map.yaml`
+* **Input:** `--config rosetta_map.yaml`, optional `--output-dir generated`, optional `--format`
 * **Process:**
 1. Reflect Schema via SQLAlchemy.
-2. Call Gemini API for semantic enrichment.
-3. Render Templates.
-4. Format code (via `ruff` if available or internal logic).
+2. Sample rows (optional) and scrub PII (optional).
+3. Call Gemini API for semantic enrichment (response currently not applied).
+4. Render Templates.
+5. Format code with `ruff` if `--format` is set.
 
 
 * **Output:** Writes `./generated/` folder containing models, repos, and audit log.
@@ -168,11 +161,11 @@ rosetta_bridge/
 ### 7.1 Unit Testing
 
 * **Schema Parsing:** Test that PostgreSQL types are correctly mapped to Python types.
-* **Code Generation:** Render templates with mock data and verify the output is valid Python syntax.
+* **Code Generation:** Render templates with mock data and verify outputs exist.
 
 ### 7.2 Safety Validation
 
-* **Regex Check:** A specific test case must scan all generated `_repos.py` files to ensure they do **not** contain the strings `.commit()`, `.execute("UPDATE`, or `.execute("DELETE`.
+* **Regex Check:** Unit test scans generated `_repos.py` for "commit()" and "UPDATE".
 
 ### 7.3 Integration Testing
 
