@@ -12,7 +12,7 @@ class DatabaseConfig(BaseModel):
 
 
 class LLMConfig(BaseModel):
-    model: str = "gemini-1.5-flash"
+    model: str = "gemini-3-flash-preview"
     temperature: float = 0.0
 
 

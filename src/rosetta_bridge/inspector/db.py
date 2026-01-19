@@ -24,4 +24,7 @@ def get_engine(
 
 def inspect_schema(table_name: str, engine: Engine) -> list[dict[str, Any]]:
     inspector = inspect(engine)
+    if "." in table_name:
+        schema, table = table_name.split(".", 1)
+        return inspector.get_columns(table, schema=schema)
     return inspector.get_columns(table_name)

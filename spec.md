@@ -26,7 +26,7 @@
 | **Package Manager** | `uv` | Fast, modern dependency and environment management. |
 | **Database Reflection** | `SQLAlchemy` + `psycopg2` | Robust introspection for Supabase (PostgreSQL). |
 | **Data Validation** | `Pydantic v2` | High-performance serialization/validation. |
-| **LLM Orchestration** | `Google Gemini API` | Uses `gemini-1.5-flash` for high-speed, low-cost semantic reasoning. |
+| **LLM Orchestration** | `Google Gemini API` | Uses `gemini-3-flash-preview` for high-speed, low-cost semantic reasoning. |
 | **Code Generation** | `Jinja2` | Templating engine to produce clean Python code. |
 | **CLI Framework** | `Typer` + `Rich` | Type-safe CLI builder with excellent UX/formatting. |
 | **Testing** | `Pytest` | Standard unit testing framework. |
@@ -66,7 +66,7 @@ database:
   connection_string: str  # SQLAlchemy URL, can reference ${DATABASE_URL}
 whitelist_tables: List[str] # Mandatory list of tables to process
 llm_config:
-  model: "gemini-1.5-flash"
+  model: "gemini-3-flash-preview"
   temperature: 0.0
 privacy:
   sample_rows: bool      # If True, sends 3 rows of data to Gemini for context

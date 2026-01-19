@@ -12,7 +12,7 @@ def test_generate_description_returns_text(monkeypatch: pytest.MonkeyPatch) -> N
 
     class DummyModels:
         def generate_content(self, model: str, contents: str):
-            assert model == "gemini-1.5-flash"
+            assert model == "gemini-3-flash-preview"
             assert "hello" in contents
             return DummyResponse("ok")
 

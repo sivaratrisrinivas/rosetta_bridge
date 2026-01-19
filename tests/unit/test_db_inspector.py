@@ -28,8 +28,9 @@ def test_get_engine_errors_when_missing_connection_string(
 
 def test_inspect_schema_returns_columns(monkeypatch: pytest.MonkeyPatch) -> None:
     class DummyInspector:
-        def get_columns(self, table_name: str):
+        def get_columns(self, table_name: str, schema: str | None = None):
             assert table_name == "users"
+            assert schema is None
             return [{"name": "id", "type": "INTEGER"}]
 
     def fake_inspect(engine: object):
@@ -39,5 +40,22 @@ def test_inspect_schema_returns_columns(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setattr(db_inspector, "inspect", fake_inspect)
 
     columns = db_inspector.inspect_schema("users", engine="engine")
+
+    assert columns == [{"name": "id", "type": "INTEGER"}]
+
+
+def test_inspect_schema_handles_schema(monkeypatch: pytest.MonkeyPatch) -> None:
+    class DummyInspector:
+        def get_columns(self, table_name: str, schema: str | None = None):
+            assert table_name == "users"
+            assert schema == "public"
+            return [{"name": "id", "type": "INTEGER"}]
+
+    def fake_inspect(engine: object):
+        return DummyInspector()
+
+    monkeypatch.setattr(db_inspector, "inspect", fake_inspect)
+
+    columns = db_inspector.inspect_schema("public.users", engine="engine")
 
     assert columns == [{"name": "id", "type": "INTEGER"}]

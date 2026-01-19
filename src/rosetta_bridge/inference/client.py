@@ -6,7 +6,7 @@ from rosetta_bridge.core.config import Settings
 
 
 class GeminiClient:
-    def __init__(self, model_name: str = "gemini-1.5-flash") -> None:
+    def __init__(self, model_name: str = "gemini-3-flash-preview") -> None:
         settings = Settings()
         api_key = settings.gemini_api_key
         self._client = genai.Client(api_key=api_key)

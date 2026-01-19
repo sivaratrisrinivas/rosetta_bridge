@@ -37,7 +37,7 @@
 ## Phase 3: The Intelligence Layer (Gemini)
 - [x] **Step 6: Gemini Client Wrapper**
   - Create `src/rosetta_bridge/inference/client.py`.
-  - Initialize `genai.GenerativeModel('gemini-1.5-flash')`.
+  - Initialize `genai.Client()` with `gemini-3-flash-preview`.
   - Implement `generate_description(table_context)`.
   - *Verification:* Create `tests/debug_gemini.py` to send a "Hello World" prompt to Gemini and print the response.
 

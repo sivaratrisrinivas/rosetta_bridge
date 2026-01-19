@@ -26,7 +26,7 @@ def test_load_rosetta_map_expands_env_and_defaults(tmp_path: Path) -> None:
     config = load_rosetta_map(config_path)
 
     assert config.database.connection_string == "postgresql://example/db"
-    assert config.llm_config.model == "gemini-1.5-flash"
+    assert config.llm_config.model == "gemini-3-flash-preview"
     assert config.llm_config.temperature == 0.0
     assert config.privacy.sample_rows is False
     assert config.privacy.scrub_pii is True
@@ -45,7 +45,7 @@ def test_init_command_writes_default_config(tmp_path: Path) -> None:
     assert data["project_name"] == "rosetta-bridge"
     assert data["database"]["connection_string"] == "${DATABASE_URL}"
     assert data["whitelist_tables"] == []
-    assert data["llm_config"]["model"] == "gemini-1.5-flash"
+    assert data["llm_config"]["model"] == "gemini-3-flash-preview"
     assert data["llm_config"]["temperature"] == 0.0
     assert data["privacy"]["sample_rows"] is False
     assert data["privacy"]["scrub_pii"] is True
