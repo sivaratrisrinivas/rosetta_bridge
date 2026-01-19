@@ -19,7 +19,8 @@ def fetch_sample_rows(
     table_name: str,
     limit: int = 3,
 ) -> list[dict[str, Any]]:
-    statement = text(f'SELECT * FROM "{table_name}" LIMIT :limit')
+    table_ref = ".".join(f'"{part}"' for part in table_name.split("."))
+    statement = text(f"SELECT * FROM {table_ref} LIMIT :limit")
     with engine.connect() as connection:
         result = connection.execute(statement, {"limit": limit})
         return list(result.mappings())

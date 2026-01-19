@@ -32,11 +32,13 @@ def detect_enum_values(
     if normalized_type not in _ENUM_TYPES:
         return None
 
+    table_ref = ".".join(f'"{part}"' for part in table_name.split("."))
+    column_ref = f'"{column_name}"'
     count_stmt = text(
-        f'SELECT COUNT(DISTINCT "{column_name}") AS value_count FROM "{table_name}"'
+        f"SELECT COUNT(DISTINCT {column_ref}) AS value_count FROM {table_ref}"
     )
     values_stmt = text(
-        f'SELECT DISTINCT "{column_name}" FROM "{table_name}" ORDER BY "{column_name}"'
+        f"SELECT DISTINCT {column_ref} FROM {table_ref} ORDER BY {column_ref}"
     )
 
     with engine.connect() as connection:

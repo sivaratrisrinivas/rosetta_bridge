@@ -70,7 +70,7 @@
   - Generate a simple Markdown table: `| Table | Original Column | Inferred Meaning |`.
   - *Verification:* Generate the log and check file content.
 
-- [ ] **Step 12: CLI 'Inspect' Command**
+- [x] **Step 12: CLI 'Inspect' Command**
   - Wire up `rosetta-bridge inspect` in `main.py`.
   - Should run Phase 1 & 2 (Connectivity + Analysis) and print a summary table to the console.
   - *Verification:* Run `uv run rosetta-bridge inspect --config rosetta_map.yaml` against Supabase.

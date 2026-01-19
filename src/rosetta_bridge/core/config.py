@@ -43,11 +43,15 @@ class Settings(BaseSettings):
 _ENV_PATTERN = re.compile(r"^\$\{([A-Z0-9_]+)\}$")
 
 
-def _expand_env_value(value: str) -> str:
+def _expand_env_value(value: str, settings: Settings) -> str:
     match = _ENV_PATTERN.match(value)
     if not match:
         return value
     env_name = match.group(1)
+    if env_name == "DATABASE_URL" and settings.database_url:
+        return settings.database_url
+    if env_name == "GEMINI_API_KEY" and settings.gemini_api_key:
+        return settings.gemini_api_key
     return os.getenv(env_name, value)
 
 
@@ -60,7 +64,7 @@ def load_rosetta_map(path: Path, settings: Settings | None = None) -> RosettaMap
     database = payload.get("database", {})
     connection = database.get("connection_string")
     if isinstance(connection, str):
-        database["connection_string"] = _expand_env_value(connection)
+        database["connection_string"] = _expand_env_value(connection, settings)
     payload["database"] = database
 
     return RosettaMap.model_validate(payload)
