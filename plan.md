@@ -58,7 +58,7 @@
   - Write template for `Repository` classes containing ONLY `select` statements (Safety by Design).
   - *Verification:* Render the template and verify the string "commit()" or "update" does NOT exist in the output.
 
-- [ ] **Step 10: File Writer & Formatting**
+- [x] **Step 10: File Writer & Formatting**
   - Create `src/rosetta_bridge/codegen/writer.py`.
   - Implement logic to write strings to `.py` files.
   - (Optional) Use `subprocess` to run `uv run ruff format` on the generated files.
