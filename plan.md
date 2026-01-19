@@ -80,6 +80,6 @@
   - Wire up full pipeline: Inspect -> Analyze -> Infer -> Generate -> Audit.
   - *Verification:* End-to-end run producing usable code.
 
-- [ ] **Step 14: Safety Integration Test**
+- [x] **Step 14: Safety Integration Test**
   - Create a test that attempts to call a generated repository method.
   - *Verification:* Ensure it fetches data correctly but fails if you try to inject an UPDATE (proving ReadOnly safety).
