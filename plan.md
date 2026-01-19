@@ -16,7 +16,7 @@
   - Update `src/rosetta_bridge/main.py` to add an `init` command that generates a default `rosetta_map.yaml` file.
   - *Verification:* Run `uv run rosetta-bridge init` and verify `rosetta_map.yaml` is created with correct defaults.
 
-- [ ] **Step 3: Database Inspector (Supabase/Postgres)**
+- [x] **Step 3: Database Inspector (Supabase/Postgres)**
   - Create `src/rosetta_bridge/inspector/db.py`.
   - Implement `get_engine()` using SQLAlchemy.
   - Implement `inspect_schema(table_name)` to pull columns using SQLAlchemy reflection or `information_schema`.

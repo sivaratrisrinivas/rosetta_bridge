@@ -33,7 +33,11 @@ class Settings(BaseSettings):
     database_url: str | None = Field(default=None, alias="DATABASE_URL")
     gemini_api_key: str | None = Field(default=None, alias="GEMINI_API_KEY")
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 _ENV_PATTERN = re.compile(r"^\$\{([A-Z0-9_]+)\}$")
