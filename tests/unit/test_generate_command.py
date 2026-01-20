@@ -69,6 +69,7 @@ def test_generate_command_writes_outputs(tmp_path: Path, monkeypatch) -> None:
     assert (output_dir / "_models.py").exists()
     assert (output_dir / "_repos.py").exists()
     assert (output_dir / "audit_log.md").exists()
+    assert (output_dir / "functions.json").exists()
 
     repos_text = (output_dir / "_repos.py").read_text()
     assert "commit()" not in repos_text

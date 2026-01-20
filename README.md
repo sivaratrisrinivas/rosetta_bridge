@@ -4,7 +4,7 @@
 CLI that turns a Supabase/Postgres schema into read-only Python models, read-only repos, and an audit log.
 
 ## Status
-End-to-end generate pipeline is wired. Gemini prompts are sent during generation, but semantic renaming is not yet applied to the output (current output keeps original column names plus enum hints).
+End-to-end generate pipeline is wired. Gemini responses are parsed (when JSON) to apply semantic names/descriptions.
 
 ## Setup
 ```
@@ -46,6 +46,7 @@ generated/
   _models.py
   _repos.py
   audit_log.md
+  functions.json
 ```
 
 ## Tests

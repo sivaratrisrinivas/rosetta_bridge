@@ -3,20 +3,29 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Iterable
 
+from dataclasses import dataclass
 from jinja2 import Environment, FileSystemLoader
 
-from rosetta_bridge.codegen.renderer import TableSpec, to_pascal
+from rosetta_bridge.codegen.renderer import to_pascal
 
 
-def _normalize_tables(tables: Iterable[dict[str, Any]]) -> list[TableSpec]:
+@dataclass(frozen=True)
+class RepoTableSpec:
+    table_name: str
+    column_names: list[str]
+
+
+def _normalize_tables(tables: Iterable[dict[str, Any]]) -> list[RepoTableSpec]:
     normalized = []
     for table in tables:
         columns = table.get("columns", [])
+        column_names = [
+            column.get("original_name")
+            for column in columns
+            if column.get("original_name")
+        ]
         normalized.append(
-            TableSpec(
-                table_name=table["table_name"],
-                columns=columns,
-            )
+            RepoTableSpec(table_name=table["table_name"], column_names=column_names)
         )
     return normalized
 

@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 import typer
 
@@ -6,13 +7,18 @@ from rosetta_bridge import __version__
 from rosetta_bridge.analyzer.enums import detect_enum_values
 from rosetta_bridge.analyzer.sampler import detect_pii, fetch_sample_rows
 from rosetta_bridge.codegen.audit import render_audit_log
+from rosetta_bridge.codegen.functions import render_function_schemas
 from rosetta_bridge.codegen.renderer import render_models
 from rosetta_bridge.codegen.repos import render_repositories
 from rosetta_bridge.codegen.writer import write_python_file
 from rosetta_bridge.core.config import load_rosetta_map, write_default_rosetta_map
 from rosetta_bridge.inference.client import GeminiClient
-from rosetta_bridge.inference.prompts import build_user_prompt, get_system_prompt
-from rosetta_bridge.inspector.db import get_engine, inspect_schema
+from rosetta_bridge.inference.prompts import (
+    build_user_prompt,
+    get_system_prompt,
+    parse_gemini_response,
+)
+from rosetta_bridge.inspector.db import get_engine, get_table_comment, inspect_schema
 
 app = typer.Typer(add_completion=False)
 
@@ -135,6 +141,7 @@ def generate(
 
     for table in tables:
         columns = inspect_schema(table, engine)
+        table_comment = get_table_comment(table, engine)
         sample_rows = []
         if rosetta_map.privacy.sample_rows:
             sample_rows = fetch_sample_rows(engine, table, limit=3)
@@ -157,6 +164,7 @@ def generate(
                 {
                     "name": name,
                     "type": column_type,
+                    "comment": column.get("comment"),
                     "samples": [] if scrub_pii else samples,
                 }
             )
@@ -175,14 +183,30 @@ def generate(
                     "description": description,
                 }
             )
-            audit_rows.append((table, name, semantic_name))
 
         user_prompt = build_user_prompt(
             table,
             prompt_columns,
             scrub_pii=rosetta_map.privacy.scrub_pii,
+            table_comment=table_comment,
         )
-        gemini.generate_description(f"{system_prompt}\n\n{user_prompt}")
+        gemini_response = gemini.generate_description(f"{system_prompt}\n\n{user_prompt}")
+        inferred = parse_gemini_response(gemini_response)
+
+        for column in enriched_columns:
+            name = column["original_name"]
+            inference = inferred.get(name, {})
+            semantic_name = inference.get("semantic_name") or name
+            description = inference.get("description") or column.get("description")
+            if column.get("description") and inference.get("description"):
+                description = f"{inference.get('description')} {column.get('description')}"
+            column["semantic_name"] = semantic_name
+            column["description"] = description
+
+            audit_value = semantic_name
+            if semantic_name != name:
+                audit_value = f"{semantic_name} (Inferred)"
+            audit_rows.append((table, name, audit_value))
 
         rendered_tables.append(
             {
@@ -197,6 +221,9 @@ def generate(
     write_python_file(output_dir / "_repos.py", repos_code, format_with_ruff)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "audit_log.md").write_text(render_audit_log(audit_rows))
+    (output_dir / "functions.json").write_text(
+        json.dumps(render_function_schemas(rendered_tables), indent=2)
+    )
 
     typer.echo(f"Wrote {output_dir}")
 

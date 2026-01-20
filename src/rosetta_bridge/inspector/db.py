@@ -28,3 +28,16 @@ def inspect_schema(table_name: str, engine: Engine) -> list[dict[str, Any]]:
         schema, table = table_name.split(".", 1)
         return inspector.get_columns(table, schema=schema)
     return inspector.get_columns(table_name)
+
+
+def get_table_comment(table_name: str, engine: Engine) -> str | None:
+    try:
+        inspector = inspect(engine)
+    except Exception:
+        return None
+    if "." in table_name:
+        schema, table = table_name.split(".", 1)
+        comment = inspector.get_table_comment(table, schema=schema)
+    else:
+        comment = inspector.get_table_comment(table_name)
+    return comment.get("text") if isinstance(comment, dict) else None

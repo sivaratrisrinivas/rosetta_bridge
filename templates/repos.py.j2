@@ -5,6 +5,12 @@ from sqlalchemy.engine import Engine
 
 {% for table in tables %}
 class {{ to_pascal(table.table_name) }}Repository:
+    _allowed_filters = set([
+{% for name in table.column_names %}
+        "{{ name }}",
+{% endfor %}
+    ])
+
     def __init__(self, engine: Engine) -> None:
         self._engine = engine
 
@@ -12,6 +18,22 @@ class {{ to_pascal(table.table_name) }}Repository:
         statement = text('SELECT * FROM "{{ table.table_name }}"')
         with self._engine.connect() as connection:
             result = connection.execute(statement)
+            return list(result.mappings())
+
+    def fetch_by(self, **filters: object) -> list[dict]:
+        if not filters:
+            return self.fetch_all()
+
+        unknown = set(filters) - self._allowed_filters
+        if unknown:
+            raise ValueError(f"Unknown filters: {sorted(unknown)}")
+
+        clauses = [f'"{name}" = :{name}' for name in filters]
+        statement = text(
+            'SELECT * FROM "{{ table.table_name }}" WHERE ' + " AND ".join(clauses)
+        )
+        with self._engine.connect() as connection:
+            result = connection.execute(statement, filters)
             return list(result.mappings())
 
 {% endfor %}

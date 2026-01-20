@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-**Rosetta Bridge** is a CLI-based build tool designed to bridge the "Execution Gap" between cryptic legacy SQL schemas (specifically Supabase/PostgreSQL) and modern AI Agents. It automates schema inspection, applies safety heuristics, and invokes Gemini for semantic enrichment. It generates type-safe Python code (Pydantic models) and "Safe-by-Design" read-only repositories that Agents can use immediately. (Gemini output is currently not applied to rename fields.)
+**Rosetta Bridge** is a CLI-based build tool designed to bridge the "Execution Gap" between cryptic legacy SQL schemas (specifically Supabase/PostgreSQL) and modern AI Agents. It automates schema inspection, applies safety heuristics, and invokes Gemini for semantic enrichment. It generates type-safe Python code (Pydantic models), function schemas for tool calling, and "Safe-by-Design" read-only repositories that Agents can use immediately.
 
 ### 1.1 Core Objectives
 1.  **Accelerate Time-to-Value:** Reduce the "schema onboarding" phase from weeks to minutes by automating the mapping of tables to business logic.
@@ -41,7 +41,7 @@ The system operates as a **unidirectional build pipeline**. It does not run as a
 
 1.  **Ingestion:** Connect to Supabase $\rightarrow$ Reflect Schema Metadata (Tables, Columns, Types).
 2.  **Analysis:** Detect candidates for Enums (low cardinality) & flag PII (Regex heuristics).
-3.  **Inference:** Send sanitized metadata to Gemini $\rightarrow$ Receive semantic descriptions (currently not applied to output).
+3.  **Inference:** Send sanitized metadata to Gemini $\rightarrow$ Receive semantic descriptions (JSON).
 4.  **Generation:** Hydrate Jinja2 templates $\rightarrow$ Write `.py` artifacts & Audit Log.
 
 ### 3.2 Output Artifacts
@@ -51,6 +51,7 @@ The tool generates a "Repository Pattern" structure in a `generated/` directory:
 * **`_models.py`:** Pydantic models representing the tables (Locked file).
 * **`_repos.py`:** Read-Only SQL access methods (Locked file).
 * **`audit_log.md`:** A report of what was mapped and why.
+* **`functions.json`:** OpenAI-style function schemas.
 
 ---
 
@@ -74,14 +75,14 @@ privacy:
 
 ```
 
-### 4.2 Render Payloads (Current)
+### 4.2 Render Payloads
 
 **`ColumnSpec`**
 
 * `original_name`: str (e.g., `status`)
 * `python_type`: str (e.g., `str`, `int`)
-* `semantic_name`: str | None (currently same as `original_name`)
-* `description`: str | None (enum hint like "Allowed values: active, closed")
+* `semantic_name`: str | None (Gemini-inferred when available)
+* `description`: str | None (Gemini description and enum hints)
 
 **`TableSpec`**
 
@@ -123,9 +124,10 @@ The core execution command.
 * **Process:**
 1. Reflect Schema via SQLAlchemy.
 2. Sample rows (optional) and scrub PII (optional).
-3. Call Gemini API for semantic enrichment (response currently not applied).
+3. Call Gemini API for semantic enrichment (response parsed as JSON).
 4. Render Templates.
-5. Format code with `ruff` if `--format` is set.
+5. Emit `functions.json`.
+6. Format code with `ruff` if `--format` is set.
 
 
 * **Output:** Writes `./generated/` folder containing models, repos, and audit log.

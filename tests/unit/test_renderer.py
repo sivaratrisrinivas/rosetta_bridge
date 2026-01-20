@@ -27,3 +27,21 @@ def test_render_models_outputs_python_code(tmp_path) -> None:
     assert "class UserAccounts" in output
     assert "id: int" in output
     assert "email_address: str" in output
+
+
+def test_render_models_sanitizes_schema_names() -> None:
+    tables = [
+        {
+            "table_name": "public.users",
+            "columns": [
+                {
+                    "original_name": "id",
+                    "python_type": "int",
+                }
+            ],
+        }
+    ]
+
+    output = render_models(tables)
+
+    assert "class PublicUsers" in output

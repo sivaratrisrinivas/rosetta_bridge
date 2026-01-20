@@ -1,11 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 {% for table in tables %}
 class {{ to_pascal(table.table_name) }}(BaseModel):
 {% for column in table.columns %}
-    {{ column.semantic_name or column.original_name }}: {{ column.python_type }}
-{% if column.description %}
-    """{{ column.description }}"""
+{% if column.use_field %}
+    {{ column.field_name }}: {{ column.python_type }} = Field(
+{% if column.alias %}        alias="{{ column.alias }}"{% endif %}{% if column.description %}{% if column.alias %},{% endif %}
+        description="{{ column.description }}"{% endif %}
+    )
+{% else %}
+    {{ column.field_name }}: {{ column.python_type }}
 {% endif %}
 {% endfor %}
 
