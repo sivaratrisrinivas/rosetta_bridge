@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rosetta Bridge</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+      --bg: #fffbf7;
+      --bg-secondary: #f7f3ef;
+      --surface: #ffffff;
+      --text: #1a1614;
+      --text-secondary: #6b5d54;
+      --text-tertiary: #a39489;
+      --border: rgba(26, 22, 20, 0.08);
+      --terra: #c45a3b;
+      --terra-light: #d4785e;
+      --terra-dark: #a24830;
+      --terra-muted: rgba(196, 90, 59, 0.08);
+      --sand: #e8ddd4;
+      --clay: #8b7355;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px rgba(26, 22, 20, 0.04);
+      --shadow: 0 4px 24px rgba(26, 22, 20, 0.06);
+      --transition: 0.2s ease;
+      --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Ambient */
+    .ambient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      animation: drift 25s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #c45a3b 0%, #d4785e 100%);
+      top: -150px;
+      right: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #e8ddd4 0%, #d4c4b5 100%);
+      top: 300px;
+      left: -100px;
+      animation-delay: -8s;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(40px, -40px) rotate(5deg); }
+      66% { transform: translate(-30px, 30px) rotate(-5deg); }
+    }
+    
+    .container {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+    }
+    
+    /* Brand */
+    .brand {
+      padding: 48px 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      position: relative;
+    }
+
+    .logo-ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--terra);
+      border-radius: 50%;
+      animation: pulse-ring 3s ease-in-out infinite;
+    }
+
+    .logo-ring:nth-child(2) {
+      inset: 6px;
+      border-color: var(--terra-light);
+      animation-delay: -1s;
+    }
+
+    .logo-ring:nth-child(3) {
+      inset: 12px;
+      border-color: var(--terra-muted);
+      border-width: 3px;
+      animation-delay: -2s;
+    }
+
+    .logo-core {
+      position: absolute;
+      inset: 16px;
+      background: linear-gradient(135deg, var(--terra) 0%, var(--terra-dark) 100%);
+      border-radius: 50%;
+      animation: glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.7; }
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(196, 90, 59, 0.3); }
+      50% { box-shadow: 0 0 20px 4px rgba(196, 90, 59, 0.2); }
+    }
+
+    .brand-text {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Hero */
+    .hero {
+      padding: 40px 0 60px;
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: clamp(36px, 7vw, 48px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Workflow */
+    .workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 80px;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all var(--transition-slow);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .card-collapsed {
+      padding: 18px 24px;
+      cursor: pointer;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .step-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--transition);
+    }
+
+    .step-icon svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+    }
+
+    .step-icon.active {
+      background: var(--terra);
+    }
+
+    .step-icon.active svg {
+      color: white;
+    }
+
+    .step-icon.done {
+      background: var(--terra);
+    }
+
+    .step-icon.done svg {
+      color: white;
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .step-status {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .card-body {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    
+    /* Form */
+    .input-group {
+      margin-bottom: 14px;
+    }
+
+    .input-group:last-of-type {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      color: var(--text);
+      transition: all var(--transition);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--terra);
+      background: var(--bg);
+      box-shadow: 0 0 0 3px var(--terra-muted);
+    }
+    
+    input::placeholder {
+      color: var(--text-tertiary);
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      border: none;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .btn-primary {
+      background: var(--terra);
+      color: white;
+      width: 100%;
+    }
+    
+    .btn-primary:hover {
+      background: var(--terra-dark);
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+
+    .btn-ghost:hover {
+      background: var(--terra-muted);
+      color: var(--terra-dark);
+    }
+    
+    /* Tables */
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .table-count {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .table-grid {
+      display: grid;
+      gap: 6px;
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+
+    .table-grid::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .table-grid::-webkit-scrollbar-thumb {
+      background: var(--sand);
+      border-radius: 2px;
+    }
+    
+    .table-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .table-item:hover {
+      background: var(--sand);
+    }
+    
+    .table-item.selected {
+      background: var(--terra-muted);
+      border-color: var(--terra);
+    }
+    
+    .table-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    
+    .table-item.selected .table-checkbox {
+      background: var(--terra);
+      border-color: var(--terra);
+    }
+    
+    .table-checkbox svg {
+      width: 10px;
+      height: 10px;
+      color: white;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all var(--transition);
+    }
+    
+    .table-item.selected .table-checkbox svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .table-name {
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'SF Mono', monospace;
+    }
+    
+    .table-schema {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-left: auto;
+      font-family: 'SF Mono', monospace;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-secondary);
+      padding: 4px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    
+    .tab:hover {
+      color: var(--text);
+    }
+    
+    .tab.active {
+      background: var(--surface);
+      color: var(--terra);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    /* Code */
+    .code-container {
+      background: #1f1b18;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    
+    .code-filename {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      font-family: 'SF Mono', monospace;
+    }
+    
+    .code-copy {
+      padding: 5px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--terra-light);
+      background: rgba(196, 90, 59, 0.15);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .code-copy:hover {
+      background: rgba(196, 90, 59, 0.25);
+    }
+    
+    .code-content {
+      padding: 14px;
+      max-height: 320px;
+      overflow: auto;
+    }
+    
+    .code-content pre {
+      margin: 0;
+      font-family: 'SF Mono', monospace;
+      font-size: 11px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.8);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    /* Downloads */
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .download-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 14px 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .download-btn:hover {
+      background: var(--terra-muted);
+      border-color: var(--terra);
+    }
+
+    .download-btn svg {
+      width: 18px;
+      height: 18px;
+      color: var(--terra);
+    }
+
+    .download-btn span {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 251, 247, 0.95);
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition);
+    }
+    
+    .loading-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--sand);
+      border-top-color: var(--terra);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--text);
+      color: white;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 32px rgba(26, 22, 20, 0.2);
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-slow);
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .toast.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .toast.error {
+      background: #c45a3b;
+    }
+    
+    .toast.success {
+      background: #5a8a5c;
+    }
+
+    .toast svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-text {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    @media (max-width: 640px) {
+      h1 { font-size: 32px; }
+      .brand { padding: 32px 0 24px; }
+      .hero { padding: 24px 0 40px; }
+      .download-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <div class="container">
+    <!-- Brand -->
+    <div class="brand">
+      <div class="logo">
+        <div class="logo-ring"></div>
+        <div class="logo-ring"></div>
+        <div class="logo-ring"></div>
+        <div class="logo-core"></div>
+      </div>
+      <span class="brand-text">Rosetta Bridge</span>
+    </div>
+
+    <!-- Hero -->
+    <header class="hero">
+      <h1>Schema to semantics</h1>
+      <p class="hero-sub">Transform cryptic columns into readable code. Read-only. Auditable.</p>
+    </header>
+
+    <!-- Workflow -->
+    <div class="workflow">
+      <!-- Step 1 -->
+      <div class="card" id="step1-card">
+        <div class="card-header">
+          <div class="step-icon active" id="step1-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+          </div>
+          <div class="step-info">
+            <div class="step-title">Connect</div>
+          </div>
+          <div class="step-status" id="step1-status"></div>
+        </div>
+        
+        <div class="card-body" id="step1-body">
+          <div class="input-group">
+            <label>Database URL</label>
+            <input type="text" id="databaseUrl" placeholder="postgresql://user:pass@host:5432/db">
+          </div>
+          
+          <div class="input-group">
+            <label>Gemini API Key</label>
+            <input type="password" id="geminiKey" placeholder="Your API key">
+          </div>
+          
+          <button class="btn btn-primary" onclick="connect()">
+            Connect
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="card card-collapsed hidden" id="step2-card" onclick="expandStep2()">
+        <div class="card-header">
+          <div class="step-icon" id="step2-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+            </svg>
+          </div>
+          <div class="step-info">
+            <div class="step-title">Select</div>
+          </div>
+          <div class="step-status" id="step2-status"></div>
+        </div>
+        
+        <div class="card-body hidden" id="step2-body">
+          <div class="table-header">
+            <span class="table-count" id="tableCount">0 tables</span>
+            <div class="table-actions">
+              <button class="btn btn-ghost" onclick="event.stopPropagation(); selectAll()">All</button>
+              <button class="btn btn-ghost" onclick="event.stopPropagation(); deselectAll()">Clear</button>
+            </div>
+          </div>
+          
+          <div class="table-grid" id="tableGrid" onclick="event.stopPropagation()"></div>
+          
+          <button class="btn btn-primary" onclick="event.stopPropagation(); generate()">
+            Generate
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="card card-collapsed hidden" id="step3-card">
+        <div class="card-header">
+          <div class="step-icon" id="step3-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <div class="step-info">
+            <div class="step-title">Output</div>
+          </div>
+          <div class="step-status" id="step3-status"></div>
+        </div>
+        
+        <div class="card-body hidden" id="step3-body">
+          <div class="tabs">
+            <button class="tab active" onclick="showTab('models')" id="tab-models">Models</button>
+            <button class="tab" onclick="showTab('repos')" id="tab-repos">Repos</button>
+            <button class="tab" onclick="showTab('audit')" id="tab-audit">Audit</button>
+            <button class="tab" onclick="showTab('functions')" id="tab-functions">JSON</button>
+          </div>
+          
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-filename" id="currentFilename">_models.py</span>
+              <button class="code-copy" onclick="copyCode()">Copy</button>
+            </div>
+            <div class="code-content">
+              <pre id="codeOutput"></pre>
+            </div>
+          </div>
+          
+          <div class="download-grid">
+            <button class="download-btn" onclick="download('models', '_models.py')">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span>Models</span>
+            </button>
+            <button class="download-btn" onclick="download('repos', '_repos.py')">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span>Repos</span>
+            </button>
+            <button class="download-btn" onclick="download('functions', 'functions.json')">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              <span>JSON</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p class="footer-text">Powered by Gemini</p>
+    </footer>
+  </div>
+
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <p class="loading-text" id="loadingText">Connecting...</p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let tables = [];
+    let selected = new Set();
+    let outputs = {};
+    let currentTab = 'models';
+    const filenames = {
+      models: '_models.py',
+      repos: '_repos.py',
+      audit: 'audit_log.md',
+      functions: 'functions.json'
+    };
+
+    function showLoading(text) {
+      document.getElementById('loadingText').textContent = text;
+      document.getElementById('loading').classList.add('visible');
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').classList.remove('visible');
+    }
+
+    function showToast(message, type = '') {
+      const toast = document.getElementById('toast');
+      const icon = type === 'success' 
+        ? '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'
+        : type === 'error'
+        ? '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'
+        : '';
+      toast.innerHTML = icon + message;
+      toast.className = 'toast visible ' + type;
+      setTimeout(() => toast.classList.remove('visible'), 3000);
+    }
+
+    function expandStep2() {
+      const card = document.getElementById('step2-card');
+      const body = document.getElementById('step2-body');
+      if (body.classList.contains('hidden')) {
+        card.classList.remove('card-collapsed');
+        body.classList.remove('hidden');
+      }
+    }
+
+    async function connect() {
+      const url = document.getElementById('databaseUrl').value.trim();
+      const key = document.getElementById('geminiKey').value.trim();
+      
+      if (!url) return showToast('Enter database URL', 'error');
+      if (!key) return showToast('Enter API key', 'error');
+
+      showLoading('Connecting...');
+
+      try {
+        const res = await fetch('/api/connect', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ database_url: url })
+        });
+        const data = await res.json();
+        
+        if (!data.success) throw new Error(data.error);
+
+        tables = data.tables;
+        renderTables();
+        
+        document.getElementById('step1-icon').classList.remove('active');
+        document.getElementById('step1-icon').classList.add('done');
+        document.getElementById('step1-icon').innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+        document.getElementById('step1-status').textContent = 'Connected';
+        document.getElementById('step1-body').classList.add('hidden');
+        document.getElementById('step1-card').classList.add('card-collapsed');
+        
+        document.getElementById('step2-card').classList.remove('hidden');
+        document.getElementById('step2-icon').classList.add('active');
+        document.getElementById('step2-status').textContent = tables.length + ' tables';
+        
+        setTimeout(() => {
+          expandStep2();
+          document.getElementById('step2-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+        
+        hideLoading();
+        showToast('Connected', 'success');
+      } catch (e) {
+        hideLoading();
+        showToast(e.message, 'error');
+      }
+    }
+
+    function renderTables() {
+      const grid = document.getElementById('tableGrid');
+      document.getElementById('tableCount').textContent = tables.length + ' tables';
+      grid.innerHTML = tables.map(t => {
+        const [schema, name] = t.includes('.') ? t.split('.') : ['', t];
+        return `
+          <div class="table-item" onclick="toggleTable('${t}')">
+            <div class="table-checkbox">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <span class="table-name">${name}</span>
+            <span class="table-schema">${schema}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleTable(t) {
+      if (selected.has(t)) {
+        selected.delete(t);
+      } else {
+        selected.add(t);
+      }
+      updateTableUI();
+    }
+
+    function updateTableUI() {
+      const items = document.querySelectorAll('.table-item');
+      items.forEach((item, i) => {
+        if (selected.has(tables[i])) {
+          item.classList.add('selected');
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+      document.getElementById('tableCount').textContent = 
+        selected.size > 0 
+          ? selected.size + ' selected'
+          : tables.length + ' tables';
+    }
+
+    function selectAll() {
+      tables.forEach(t => selected.add(t));
+      updateTableUI();
+    }
+
+    function deselectAll() {
+      selected.clear();
+      updateTableUI();
+    }
+
+    async function generate() {
+      if (selected.size === 0) return showToast('Select tables', 'error');
+
+      showLoading('Generating...');
+
+      try {
+        const res = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            database_url: document.getElementById('databaseUrl').value.trim(),
+            gemini_api_key: document.getElementById('geminiKey').value.trim(),
+            tables: Array.from(selected),
+            sample_rows: true,
+            scrub_pii: true
+          })
+        });
+        const data = await res.json();
+        
+        if (!data.success) throw new Error(data.error);
+
+        if (data.failed_tables && data.failed_tables.length > 0) {
+          showToast('Skipped ' + data.failed_tables.length + ' table(s)', 'error');
+        }
+
+        outputs = {
+          models: data.outputs.models,
+          repos: data.outputs.repos,
+          audit: data.outputs.audit_log,
+          functions: data.outputs.functions
+        };
+        
+        document.getElementById('step2-icon').classList.remove('active');
+        document.getElementById('step2-icon').classList.add('done');
+        document.getElementById('step2-icon').innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+        document.getElementById('step2-status').textContent = selected.size + ' processed';
+        document.getElementById('step2-body').classList.add('hidden');
+        document.getElementById('step2-card').classList.add('card-collapsed');
+        document.getElementById('step2-card').onclick = null;
+        
+        document.getElementById('step3-card').classList.remove('hidden');
+        document.getElementById('step3-card').classList.remove('card-collapsed');
+        document.getElementById('step3-icon').classList.add('done');
+        document.getElementById('step3-body').classList.remove('hidden');
+        showTab('models');
+        
+        setTimeout(() => {
+          document.getElementById('step3-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+        
+        hideLoading();
+        if (!data.failed_tables || data.failed_tables.length === 0) {
+          showToast('Done', 'success');
+        }
+      } catch (e) {
+        hideLoading();
+        showToast(e.message, 'error');
+      }
+    }
+
+    function showTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('codeOutput').textContent = outputs[tab] || '';
+      document.getElementById('currentFilename').textContent = filenames[tab];
+    }
+
+    function copyCode() {
+      navigator.clipboard.writeText(outputs[currentTab] || '');
+      showToast('Copied', 'success');
+    }
+
+    function download(type, filename) {
+      const blob = new Blob([outputs[type] || ''], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

@@ -228,6 +228,28 @@ def generate(
     typer.echo(f"Wrote {output_dir}")
 
 
+@app.command()
+def serve(
+    host: str = typer.Option("127.0.0.1", "--host", "-h", help="Host to bind"),
+    port: int = typer.Option(8000, "--port", "-p", help="Port to bind"),
+    reload: bool = typer.Option(False, "--reload", help="Enable auto-reload"),
+) -> None:
+    """Start the web UI server."""
+    try:
+        import uvicorn
+    except ImportError:
+        typer.echo("Error: uvicorn not installed. Run: uv add uvicorn fastapi")
+        raise typer.Exit(1)
+
+    typer.echo(f"Starting Rosetta Bridge UI at http://{host}:{port}")
+    uvicorn.run(
+        "rosetta_bridge.web.app:app",
+        host=host,
+        port=port,
+        reload=reload,
+    )
+
+
 def main() -> None:
     app()
 

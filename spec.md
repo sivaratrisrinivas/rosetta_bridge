@@ -35,11 +35,11 @@
 
 ## 3. System Architecture
 
-The system operates as a **unidirectional build pipeline**. It does not run as a persistent server.
+The system operates as a **unidirectional build pipeline** exposed via a CLI, with an optional lightweight Web UI served by FastAPI/Starlette for interactive runs. The web server is intended for local/operator use rather than as a long-lived multi-tenant service.
 
 ### 3.1 High-Level Data Flow
 
-1.  **Ingestion:** Connect to Supabase $\rightarrow$ Reflect Schema Metadata (Tables, Columns, Types, Comments).
+1.  **Ingestion:** Connect to Supabase/Postgres (or any SQLAlchemy-compatible DB) $\rightarrow$ Reflect Schema Metadata (Tables, Columns, Types, Comments).
 2.  **Analysis:** Detect candidates for Enums (low cardinality) & flag PII (Regex heuristics).
 3.  **Inference:** Send sanitized metadata to Gemini $\rightarrow$ Receive semantic descriptions (JSON).
 4.  **Generation:** Hydrate Jinja2 templates $\rightarrow$ Write `.py` artifacts & Audit Log.
@@ -49,7 +49,7 @@ The system operates as a **unidirectional build pipeline**. It does not run as a
 The tool generates a "Repository Pattern" structure in a `generated/` directory:
 
 * **`_models.py`:** Pydantic models representing the tables (Locked file).
-* **`_repos.py`:** Read-Only SQL access methods with safe filters (Locked file).
+* **`_repos.py`:** Read-Only SQL access methods with safe filters (Locked file, no mutations/`commit()`).
 * **`audit_log.md`:** A report of what was mapped and why.
 * **`functions.json`:** OpenAI-style function schemas.
 
@@ -117,7 +117,6 @@ Runs a "Dry Run" to verify connectivity and schema readability.
 ```
 
 
-
 ### 5.3 Command: `generate`
 
 The core execution command.
@@ -132,7 +131,17 @@ The core execution command.
 6. Format code with `ruff` if `--format` is set.
 
 
-* **Output:** Writes `./generated/` folder containing models, repos, and audit log.
+* **Output:** Writes `./generated/` folder containing models, repos, audit log, and `functions.json`.
+
+### 5.4 Command: `serve`
+
+Starts the local Web UI backed by the same pipeline.
+
+* **Input:** Optional `--host`, `--port`, `--reload`.
+* **Process:**
+  1. Import FastAPI app from `rosetta_bridge.web.app:app`.
+  2. Start `uvicorn` with the given host/port.
+* **Output:** Serves a minimal UI at `http://<host>:<port>` that can call the underlying inspect/generate endpoints.
 
 ---
 

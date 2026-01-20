@@ -43,7 +43,7 @@ def build_user_prompt(
 
     return (
         "Use the following schema context to infer semantic names and descriptions.\n"
-        + json.dumps(payload, indent=2)
+        + json.dumps(payload, indent=2, default=str)
     )
 
 

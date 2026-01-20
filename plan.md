@@ -84,5 +84,12 @@
   - Create a test that attempts to call a generated repository method.
   - *Verification:* Ensure it fetches data correctly but fails if you try to inject an UPDATE (proving ReadOnly safety).
 
+## Phase 6: Web UI (FastAPI)
+- [x] **Step 15: FastAPI Web UI**
+  - Create `src/rosetta_bridge/web/app.py` with a small FastAPI app.
+  - Expose a minimal UI (served from `static/index.html`) that lets you trigger `inspect` / `generate` flows from the browser.
+  - Wire a `serve` command in `src/rosetta_bridge/main.py` that runs `uvicorn` against `rosetta_bridge.web.app:app`.
+  - *Verification:* Run `uv run rosetta-bridge serve` and open `http://127.0.0.1:8000` to confirm the UI loads and can hit the backend.
+
 ## Status
-- All planned steps complete. Generate output passes syntax, safety, and audit checks.
+- All planned steps complete. CLI and Web UI both exercise the full pipeline. Generate output passes syntax, safety, and audit checks.
