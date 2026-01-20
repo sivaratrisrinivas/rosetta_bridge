@@ -1,4 +1,4 @@
-# Rosetta Bridge 🌉
+# Rosetta Bridge
 
 ## What
 CLI + Web UI that turns a Supabase/Postgres schema into read-only Python models, read-only repos, and an audit log.
@@ -67,12 +67,6 @@ uv run rosetta-bridge generate --config rosetta_map.yaml --output-dir generated 
 uv run rosetta-bridge serve
 ```
 Then open http://127.0.0.1:8000 in your browser.
-
-![Web UI](https://via.placeholder.com/800x400?text=Rosetta+Bridge+Web+UI)
-
-## Demo (Video)
-
-<video src="docs/wonderful.mp4" controls width="800"></video>
 
 ## Output
 ```
