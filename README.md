@@ -49,6 +49,19 @@ generated/
   functions.json
 ```
 
+## Verify Core Objective
+```
+time uv run rosetta-bridge generate --config rosetta_map.yaml --output-dir generated
+rg -n "commit\\(\\)|UPDATE|DELETE|DROP|INSERT" generated/_repos.py
+python -m py_compile generated/_models.py generated/_repos.py
+rg -n "flg_act_y|c_sts|amt_tot_c|flg_frd" generated/audit_log.md
+```
+
+## Prove Gemini Call
+```
+GEMINI_API_KEY=your_key_here uv run python tests/debug_gemini.py
+```
+
 ## Tests
 ```
 uv run pytest

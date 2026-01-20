@@ -39,7 +39,7 @@ The system operates as a **unidirectional build pipeline**. It does not run as a
 
 ### 3.1 High-Level Data Flow
 
-1.  **Ingestion:** Connect to Supabase $\rightarrow$ Reflect Schema Metadata (Tables, Columns, Types).
+1.  **Ingestion:** Connect to Supabase $\rightarrow$ Reflect Schema Metadata (Tables, Columns, Types, Comments).
 2.  **Analysis:** Detect candidates for Enums (low cardinality) & flag PII (Regex heuristics).
 3.  **Inference:** Send sanitized metadata to Gemini $\rightarrow$ Receive semantic descriptions (JSON).
 4.  **Generation:** Hydrate Jinja2 templates $\rightarrow$ Write `.py` artifacts & Audit Log.
@@ -49,7 +49,7 @@ The system operates as a **unidirectional build pipeline**. It does not run as a
 The tool generates a "Repository Pattern" structure in a `generated/` directory:
 
 * **`_models.py`:** Pydantic models representing the tables (Locked file).
-* **`_repos.py`:** Read-Only SQL access methods (Locked file).
+* **`_repos.py`:** Read-Only SQL access methods with safe filters (Locked file).
 * **`audit_log.md`:** A report of what was mapped and why.
 * **`functions.json`:** OpenAI-style function schemas.
 
@@ -83,6 +83,8 @@ privacy:
 * `python_type`: str (e.g., `str`, `int`)
 * `semantic_name`: str | None (Gemini-inferred when available)
 * `description`: str | None (Gemini description and enum hints)
+* `field_name`: str (sanitized Python identifier)
+* `alias`: str | None (original column name for Field alias)
 
 **`TableSpec`**
 
