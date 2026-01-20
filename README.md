@@ -70,6 +70,10 @@ Then open http://127.0.0.1:8000 in your browser.
 
 ![Web UI](https://via.placeholder.com/800x400?text=Rosetta+Bridge+Web+UI)
 
+## Demo (Video)
+
+<video src="docs/wonderful.mp4" controls width="800"></video>
+
 ## Output
 ```
 generated/
